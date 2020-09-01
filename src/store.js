@@ -182,6 +182,9 @@ const mutations = {
             onclick: () => {
                 console.log('on click');
                 state.notify.close();
+            },
+            audio:{
+                file: ['/static/audio/notify.mp3']
             }
           });
     },
@@ -526,6 +529,7 @@ const mutations = {
            }
            //notify 弹框
            if(!state.firstLogin){
+                state.notify.player();
                 state.notify.notify({
                     title: updateStateConverstaionInfo.name, // Set notification title
                     body: notifyBody, // Set message content
