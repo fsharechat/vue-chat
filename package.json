@@ -1,6 +1,6 @@
 {
   "name": "wechat",
-  "version": "1.1.1-SNAPSHOT",
+  "version": "1.1.2-SNAPSHOT",
   "description": "基于fshare的开源即时通讯web客户端",
   "author": "comsince",
   "private": true,

@@ -128,6 +128,8 @@ const state = {
     groupInfoList: [],
     tempGroupMembers: [],
     notify:'',
+    inCommingNotify:'',
+    outGoingNotify:'',
     firstLogin: false,
     emptyMessage: false,
     //修改全屏模式
@@ -186,7 +188,20 @@ const mutations = {
             audio:{
                 file: ['/static/audio/notify.mp3']
             }
-          });
+        });
+        
+        state.inCommingNotify =  new Notify({
+            audio:{
+                file: ['/static/audio/incoming_call_ring.mp3']
+            }
+        });
+
+        state.outGoingNotify = new Notify({
+            audio:{
+                file: ['/static/audio/outgoing_call_ring.mp3']
+            }
+        });
+
     },
     // 获取搜索值
 	search (state, value) {

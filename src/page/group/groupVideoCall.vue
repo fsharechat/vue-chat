@@ -115,6 +115,20 @@ export default {
             this.initCallUserInfo()
         }
 
+
+        engineCallback.shouldStartRing = isIncomming => {
+            if(isIncomming){
+                this.inCommingNotify.loopPlay()
+            } else {
+                this.outGoingNotify.loopPlay();
+            }
+        }
+
+        engineCallback.shouldSopRing = () => {
+            this.inCommingNotify.stopPlay();
+            this.outGoingNotify.stopPlay();
+        }
+
         this.groupCallClient = this.$store.state.groupCallClient
         this.groupCallClient.setCurrentSessionCallback(sessionCallback)
         this.groupCallClient.setCurrentEngineCallback(engineCallback)
@@ -186,7 +200,9 @@ export default {
             'userInfoList',
             'selectTarget',
             'userId',
-            'groupInfoList'
+            'groupInfoList',
+            'inCommingNotify',
+            'outGoingNotify'
         ]),
         currentGroupCallMembers(){
             if(this.groupMemberInfos.length == 0){

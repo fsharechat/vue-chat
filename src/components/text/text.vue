@@ -162,7 +162,9 @@ export default {
             'emojis',
             'showChatBox',
             'showAudioBox',
-            'userInfoList'
+            'userInfoList',
+            'inCommingNotify',
+            'outGoingNotify'
         ]),
         ...mapGetters([
             'selectedChat',
@@ -543,6 +545,19 @@ export default {
             } catch(error){
                 console.error("get sendText error "+error);
             }
+        }
+
+        engineCallback.shouldStartRing = isIncomming => {
+            if(isIncomming){
+                this.inCommingNotify.loopPlay()
+            } else {
+                this.outGoingNotify.loopPlay();
+            }
+        }
+
+        engineCallback.shouldSopRing = () => {
+            this.inCommingNotify.stopPlay();
+            this.outGoingNotify.stopPlay();
         }
 
         sessionCallback.didChangeState = state => {
