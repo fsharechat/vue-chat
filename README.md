@@ -8,11 +8,10 @@
 
 **NOTE:** [飞享]IM系统开始进行商业化探索,欢迎有需要的`个人`,`企业`, `工作室`使用,关于授权合作事项,请咨询QQ `1282212195` 
 
-该项目是`飞享`聊天系统客户端源码
-
-基于[universe-push](https://github.com/comsince/universe_push)的vue即时通讯web端实现，使用websocket进行消息通讯，支持文本，图片类型发送，支持实时音视频，支持音视频与[android-chat](https://github.com/comsince/android-chat)客户端互通
+该项目是`飞享`聊天系统客户端源码vue即时通讯web端实现，使用websocket进行消息通讯，支持文本，图片类型发送，支持实时音视频，支持音视频与[android-chat](https://github.com/fsharechat/android-chat)客户端互通
 
 # 项目截图
+
 * 消息提示
 
 ![image](./attachment/vue-chat-unread.png)
@@ -30,8 +29,10 @@
 ![image](./attachment/vue-chat-video.png)
 
 # 项目演示
+
 * [项目公测地址](https://chat.comsince.cn)
-* 请选择其中任何一个帐号密码进行登录即可
+* 请选择其中任何一个帐号密码进行登录即可  
+
 ```properties
 帐号：13800000000, 13800000001, 13800000002
 密码：556677
@@ -53,16 +54,8 @@
 ![image](https://user-gold-cdn.xitu.io/2020/4/13/171719952947e62a?w=1518&h=655&f=png&s=170160)
 
 ### V1.0.2
-* 计划增加音视频聊天功能
-* 实现与android客户端音视频互通
-
-> 语音通话
-
-![image](https://user-gold-cdn.xitu.io/2020/3/20/170f70e65d19d2ac?w=2880&h=1800&f=png&s=1120425)
-
-> 视频通话
-
-![image](https://user-gold-cdn.xitu.io/2020/3/20/170f70e73e8ad91e?w=2880&h=1800&f=png&s=1323835)
+* 计划增加一对一音视频聊天功能
+* 实现与[android](https://github.com/fsharechat/android-chat)客户端音视频互通
 
 ### V1.0.3
 * 增加好友搜索，好友添加功能，形成功能闭环
@@ -98,11 +91,13 @@
 ### V1.0.14
 * 修复群组管理员撤回其他成员发送消息的问题
 
-### V1.1.0-SNAPSHOT
+### V1.1.0
 * 加入群组音视频功能
 
-**NOTE:** 待解决问题列表
-* groupCallClient 初始化问题
+### V1.1.3
+* 增加通知短音提示
+* 增加音视频通话铃声提示
+* 增加截图粘贴发送功能
 
 ## Build Setup
 
@@ -155,9 +150,9 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 ## QQ 群交流
 
-| QQ群      | QQ群 |
-| :--------: | :--------: | 
-|<img src="http://image.comsince.cn/1-VYVLVL22-1587711095978-/storage/emulated/0/Tencent/QQ_Images/qrcode_1587711062833.jpg" alt="图片替换文本" width="300" height="300" align="center" />|![image](./attachment/qq_qrcode_universe_push.jpg)|
+| QQ群      | 
+| :--------: |
+|<img src="http://image.comsince.cn/1-VYVLVL22-1587711095978-/storage/emulated/0/Tencent/QQ_Images/qrcode_1587711062833.jpg" alt="图片替换文本" width="300" height="400" align="center" />|
 
 ## 技术支持
 

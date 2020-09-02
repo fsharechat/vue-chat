@@ -205,44 +205,49 @@ export default {
                         
                 },200);
            } else {
-                var key = MessageContentMediaType.Image +"-"+LocalStore.getUserId()+"-"+new Date().getTime()+"-"+file.name;
-                webSocketCli.getMinioUploadUrl(MessageContentMediaType.Image,key).then(data => {
-                    if(data.code == SUCCESS_CODE){
-                        console.log("domain "+data.result.domain+" url "+data.result.url)
-                        var messageId;
-                        var thunmbanilwithoutDesc;
-                        //获取缩略图,同时也为了适配android 端适配的问题，防止转发图片报错
-                        var reader = new FileReader()
-                        reader.readAsDataURL(file)
-                        reader.onload = (e) => {
-                            var result = e.target.result
-                            this.canvasDataURL(result,{   
-                            },base64Img => {
-                                thunmbanilwithoutDesc = base64Img.split(',')[1]
-                                //添加缩略消息
-                                var imageMessageContent = new ImageMessageContent(localPath,null,thunmbanilwithoutDesc);
-                                var message = Message.conert2Message(new SendMessage(null,imageMessageContent));
-                                var protoMessage = ProtoMessage.convertToProtoMessage(message);
-                                messageId = protoMessage.messageId
-                                store.dispatch('preAddProtoMessage', protoMessage);
-                            })
-                        }
-
-                        fetch(data.result.url, {
-                            method: 'PUT',
-                            body: file
-                            }).then(() => {
-                                var remotePath = data.result.domain+"/"+key;
-                                console.log("remote path "+remotePath)
-                                var imageMessageContent = new ImageMessageContent(localPath,remotePath,thunmbanilwithoutDesc);
-                                store.dispatch('updateSendMessage', {messageId: messageId,messageContent:imageMessageContent})
-                            }).catch((e) => {
-                                console.error(e);
-                            });
-                    }
-                })  
+                this.sendImage(file)  
            }
            this.$refs.uploadPic.value = null;
+        },
+
+        sendImage(file){
+            var store = this.$store;
+            var key = MessageContentMediaType.Image +"-"+LocalStore.getUserId()+"-"+new Date().getTime()+"-"+file.name;
+            webSocketCli.getMinioUploadUrl(MessageContentMediaType.Image,key).then(data => {
+                if(data.code == SUCCESS_CODE){
+                    console.log("domain "+data.result.domain+" url "+data.result.url)
+                    var messageId;
+                    var thunmbanilwithoutDesc;
+                    //获取缩略图,同时也为了适配android 端适配的问题，防止转发图片报错
+                    var reader = new FileReader()
+                    reader.readAsDataURL(file)
+                    reader.onload = (e) => {
+                        var result = e.target.result
+                        this.canvasDataURL(result,{   
+                        },base64Img => {
+                            thunmbanilwithoutDesc = base64Img.split(',')[1]
+                            //添加缩略消息
+                            var imageMessageContent = new ImageMessageContent(file,null,thunmbanilwithoutDesc);
+                            var message = Message.conert2Message(new SendMessage(null,imageMessageContent));
+                            var protoMessage = ProtoMessage.convertToProtoMessage(message);
+                            messageId = protoMessage.messageId
+                            store.dispatch('preAddProtoMessage', protoMessage);
+                        })
+                    }
+
+                    fetch(data.result.url, {
+                        method: 'PUT',
+                        body: file
+                        }).then(() => {
+                            var remotePath = data.result.domain+"/"+key;
+                            console.log("remote path "+remotePath)
+                            var imageMessageContent = new ImageMessageContent(file,remotePath,thunmbanilwithoutDesc);
+                            store.dispatch('updateSendMessage', {messageId: messageId,messageContent:imageMessageContent})
+                        }).catch((e) => {
+                            console.error(e);
+                        });
+                }
+            }) 
         },
  
         /*** js 图片压缩上传(纯js的质量压缩，非长宽压缩) 
@@ -618,6 +623,32 @@ export default {
         this.voipClient = this.$store.state.voipClient;
         this.voipClient.setCurrentSessionCallback(sessionCallback);
         this.voipClient.setCurrentEngineCallback(engineCallback);
+
+        var _this = this
+        document.getElementById('sendText').addEventListener('paste',function(e){
+                var cbd = e.clipboardData;
+                var ua = window.navigator.userAgent;
+                // 没有数据
+                if (!(e.clipboardData && e.clipboardData.items)) { return;
+                }
+                // Mac平台下Chrome49版本以下 复制Finder中的文件的Bug Hack掉
+                if(cbd.items && cbd.items.length === 2 && cbd.items[0].kind === "string" && cbd.items[1].kind === "file" &&
+                    cbd.types && cbd.types.length === 2 && cbd.types[0] === "text/plain" && cbd.types[1] === "Files" &&
+                    ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49){
+                    return;
+                }
+                for(var i = 0; i < cbd.items.length; i++){
+                    var item = cbd.items[i];
+                    var blob;
+                    if(item.kind == "file"){
+                        blob = item.getAsFile();  if(blob.size === 0){  return;
+                    }
+                    // 插入图片记录
+                    _this.sendImage(blob)
+                        
+                }
+            }
+        });
     },
     watch: {
         // 在选择其它对话的时候 聚焦输入框
