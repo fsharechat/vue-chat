@@ -12,7 +12,7 @@
             <input type="file" accept="video/*" id="chat-send-video" ref="uploadVideo" @change="sendVideoMessage">
         </i>
         <i title="发送文件" class="icon iconfont icon-wenjian">
-            <input type="file" accept="*" id="chat-send-file">
+            <input type="file" accept="*" id="chat-send-file" ref="uploadFile" @change="sendFile">
         </i>
         <transition name="showbox">
             <div class="emojiBox" v-show="showEmoji">
@@ -123,6 +123,7 @@ import webSocketCli from '../../websocket/websocketcli'
 import Message from '../../websocket/message/message'
 import ProtoMessage from '../../websocket/message/protomessage'
 import VideoMessageContent from '../../websocket/message/videoMessageContent'
+import FileMessageContent from '../../websocket/message/fileMessageContent'
 export default {
     data () {
         return {
@@ -354,6 +355,40 @@ export default {
                 callback.call(me, undefined, undefined, e);
             };
             video.src = path;
+        },
+
+        sendFile(e){
+            var store = this.$store;
+            var file = e.target.files[0];
+            var localPath = e.target.value
+
+            var key = MessageContentMediaType.File +"-"+LocalStore.getUserId()+"-"+new Date().getTime()+"-"+file.name;
+            webSocketCli.getMinioUploadUrl(MessageContentMediaType.File,key).then(data => {
+                if(data.code == SUCCESS_CODE){
+                    console.log("domain "+data.result.domain+" url "+data.result.url)
+                    var messageId;
+                    var fileMessageContent = new FileMessageContent(file,'');
+                    var message = Message.conert2Message(new SendMessage(null,fileMessageContent));
+                    var protoMessage = ProtoMessage.convertToProtoMessage(message);
+                    messageId = protoMessage.messageId
+                    store.dispatch('preAddProtoMessage', protoMessage);
+            
+
+                    fetch(data.result.url, {
+                        method: 'PUT',
+                        body: file
+                        }).then(() => {
+                            var remotePath = data.result.domain+"/"+key;
+                            console.log("remote path "+remotePath)
+                            var message = new FileMessageContent(file,remotePath);
+                            store.dispatch('updateSendMessage', {messageId: messageId,messageContent:message})
+                        }).catch((e) => {
+                            console.error(e);
+                        });
+                }
+                }) 
+
+            this.$refs.uploadFile.value = null;
         },
 
         // 按回车发送信息

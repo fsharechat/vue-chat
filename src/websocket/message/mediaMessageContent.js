@@ -8,9 +8,9 @@ export default class MediaMessageContent extends MessageContent {
     constructor(messageType, mediaType = 0, fileOrLocalPath, remotePath) {
         super(messageType);
         this.mediaType = mediaType;
+        this.remotePath = remotePath;
         if(typeof fileOrLocalPath === "string"){
           this.localPath = fileOrLocalPath;
-          this.remotePath = remotePath;
         }else {
           this.file = fileOrLocalPath;
           if (fileOrLocalPath && fileOrLocalPath.path !== undefined) {

@@ -40,7 +40,16 @@
                                         [位置消息]
                                     </div>
                                     <div v-if="item.content.type === 5">
-                                        [文件消息]
+                                        <div class="attachment"> 
+                                            <div class="flexbox flex-alignc"> 
+                                                <i class="ico-bg"></i> 
+                                                    <div class="file-info flex1"> 
+                                                        <p class="name">{{fileMessageConfig(item).name}}</p>
+                                                        <p class="size">{{fileMessageConfig(item).size}}</p>
+                                                    </div> 
+                                                <a class="btn-down" :href="fileMessageConfig(item).remotePath" target="_blank"></a>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div v-if="item.content.type === 6" >
                                         <Xgplayer :config="videoConfig(item,false,imageThumnailSrc(item))" @player="Player = $event"/>
@@ -279,6 +288,11 @@ export default {
             return messageContent.formatNotification();
         },
 
+        fileMessageConfig(protoMessage){
+           var fileMessageContent = MessageConfig.convert2MessageContent(protoMessage.from,protoMessage.content)
+           return fileMessageContent;
+        },
+
         isNotification(type){
             return type >= 80 && type <= 117 
         },
@@ -429,6 +443,35 @@ export default {
                         word-break: break-all
                         background-color: #fafafa
                         border-radius: 4px
+                        .attachment
+                            min-width: 200px
+                            max-width: 350px
+                            .ico-bg
+                                background: url(/static/images/icon__attachment-white.png) no-repeat center #3aa4dd;
+                                background-size: 20px; 
+                                display: inline-block; 
+                                vertical-align: top; 
+                                height: 40px; 
+                                width: 40px;
+                            .file-info
+                                font-size: 14px;
+                                font-family: "Micrsofot Yahei";
+                                margin-left: 10px;
+                            .name
+                                overflow: hidden;
+                                white-space: nowrap; 
+                                text-overflow: ellipsis; 
+                                max-width: 248px;
+                            .size
+                                color: #666;
+                                font-size: 12px;
+                            .btn-down
+                                background: url(/static/images/icon__download.png) no-repeat center; 
+                                background-size: 15px; 
+                                display: inline-block; 
+                                vertical-align: top; 
+                                height: 30px; 
+                                width: 20px;                
                         .text
                             white-space: pre-wrap;
                         &:before

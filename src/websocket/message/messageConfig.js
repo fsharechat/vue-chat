@@ -20,6 +20,7 @@ import KickoffGroupMemberNotification from './notification/kickoffGroupMemberNot
 import DismissGroupNotification from './notification/dismissGroupNotification'
 import LocalStore from '../store/localstore'
 import VideoMessageContent from './videoMessageContent'
+import FileMessageContent from './fileMessageContent'
 export default class MessageConfig{
     static getMessageContentClazz(type) {
         for (const content of MessageConfig.MessageContents) {
@@ -111,6 +112,7 @@ export default class MessageConfig{
             name: 'file',
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.File,
+            contentClazz: FileMessageContent,
         },
         {
             name: 'video',
