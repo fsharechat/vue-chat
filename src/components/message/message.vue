@@ -10,7 +10,8 @@
             </div>
 		</header>
 		<div class="message-wrapper" ref="list" @scroll="scrollEvent" @click="messageBoxClick" :style="{height: (appHeight * 0.75-60) + 'px'}">
-		    <ul v-if="selectedChat">
+		    <div v-if="isLoading" class="loading"><img src="../../assets/img/loading.gif" />{{loadingDes}}</div>
+            <ul v-if="selectedChat">
 		    	<li v-bind:key = index v-for="(item, index) in selectedChat.protoMessages" class="message-item">
 		    		<div v-if="isShowTime(index,selectedChat.protoMessages)" class="time"><span>{{item.timestamp | getTimeStringAutoShort2}}</span></div>
                     <div v-if="isGroupNotification(item)" class="time"><span>{{notificationContent(item)}}</span></div>
@@ -111,7 +112,9 @@ export default {
             options: {
                 url: 'data-src'
             },
-            messageDatalistHeight:0
+            messageDatalistHeight:0,
+            isLoading: false,
+            loadingDes: '数据载入中...'
         }
     },
     
@@ -281,6 +284,8 @@ export default {
                  this.$store.dispatch('clearUnreadStatus', '')
              }
              if(e.srcElement.scrollTop == 0){
+                 this.isLoading = true
+                 this.loadingDes = "数据载入中..."
                  this.messageDatalistHeight = e.srcElement.scrollHeight;
                  console.log("scroll height "+listheight)
                  var conversationType = this.isSingleConversation ? ConversationType.Single : ConversationType.Group
@@ -291,6 +296,7 @@ export default {
                      console.log("beforeUid "+beforeUid)
                  }
                  webSocketClient.getRemoteMessages(conversation,beforeUid,20).then(data => {
+                     this.isLoading = false;
                      //console.log('code '+data.code+' result '+data.result)
                      if(data.result){
                         var remoteMessage = JSON.parse(data.result)
@@ -298,9 +304,8 @@ export default {
                         console.log("message count "+count)
                         if(count > 0){
                            var messageList = remoteMessage.messageResponseList;
-
-                           for(var i = messageList.length - 1; i >= 0; i-- ){
-                               var protoMessage = ProtoMessage.toProtoMessage(messageList[i]);
+                           for(var originProtoMessage of messageList ){
+                               var protoMessage = ProtoMessage.toProtoMessage(originProtoMessage);
                                this.addOldMessage(protoMessage)
                            }
                         }
@@ -444,6 +449,17 @@ export default {
         border-top: 1px solid #e7e7e7
         border-bottom: 1px solid #e7e7e7
         background: #f2f2f2
+        .loading
+            color: #9ea0a3;
+            font-size: 12px;
+            font-family: arial;
+            text-align: center;
+            line-height: 30px;
+            img
+                display: inline-block;
+                vertical-align: top;
+                margin: 6px 3px 0 0;
+                height: 18px;
         .message
             margin-bottom: 15px
         .time
