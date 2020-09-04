@@ -4,7 +4,7 @@ import router from './router'
 import VueWebSocket from './websocket';
 import VoipClient from './webrtc/voipclient'
 import GroupCallClient from './webrtc/groupCallClient'
-import {WS_PROTOCOL,WS_IP,WS_PORT,HEART_BEAT_INTERVAL,RECONNECT_INTERVAL,BINTRAY_TYPE, KEY_VUE_USER_ID, KEY_VUE_TOKEN} from './constant/index'
+import {WS_PROTOCOL,WS_IP,WS_PORT,HEART_BEAT_INTERVAL,RECONNECT_INTERVAL,BINTRAY_TYPE, KEY_VUE_USER_ID, KEY_VUE_TOKEN, CONVERSATION_MAX_MESSAGE_SIZE} from './constant/index'
 import StateConversationInfo from './websocket/model/stateConversationInfo';
 import StateChatMessage from './websocket/model/stateSelectChatMessage'
 import Message from './websocket/message/message';
@@ -152,7 +152,8 @@ const state = {
     //0创建群组，1,添加群组人员，2,移除群组人员 3 单聊用户创建群组 4 创建群组音视频聊天
     groupOperateState: 0,
     groupMemberMap: new Map(),
-    groupMemberTracker: 0
+    groupMemberTracker: 0,
+    isLoadRemoteMessage: false
 }
 
 const mutations = {
@@ -380,6 +381,7 @@ const mutations = {
 
     // 发送信息
     sendMessage (state, sendMessage){
+        state.isLoadRemoteMessage = false;
         var message = Message.toMessage(state,sendMessage);
         var protoMessage = ProtoMessage.convertToProtoMessage(message);
         console.log("send protomessage "+JSON.stringify(protoMessage));
@@ -429,6 +431,10 @@ const mutations = {
                 stateChatMessage.protoMessages.push(protoMessage);
                 state.messages.push(stateChatMessage);
             } else {
+                //限制单个会话最大消息存储总数
+                if(stateChatMessage.protoMessages.length > CONVERSATION_MAX_MESSAGE_SIZE){
+                    stateChatMessage.protoMessages.splice(0, stateChatMessage.protoMessages.length - CONVERSATION_MAX_MESSAGE_SIZE );
+                }
                 stateChatMessage.protoMessages.push(protoMessage);
             }
             
@@ -579,7 +585,22 @@ const mutations = {
         }
     },
 
+    //获取用户当前会话的历史消息
+    addOldMessage(state,protoMessage){
+        state.isLoadRemoteMessage = true
+        console.log("add old message "+protoMessage)
+        for(var stateChatMessage of state.messages){
+            if(protoMessage.target == stateChatMessage.target){
+                var isSameProtoMessage = stateChatMessage.protoMessages.find(message => message.messageId === protoMessage.messageId);
+                if(!isSameProtoMessage){
+                 stateChatMessage.protoMessages.unshift(protoMessage);
+                } 
+            }
+        }
+    },
+
     addProtoMessage(state,protoMessage){
+       state.isLoadRemoteMessage = false 
         //更新用户信息
        if(state.waitUserIds.indexOf(protoMessage.from) == -1){
            console.log("waiting for get userId "+protoMessage.from);
@@ -990,6 +1011,7 @@ const actions = {
     deleteMessage: ({ commit }, value) => commit('deleteMessage', value),
     preAddProtoMessage: ({ commit }, value) => commit('preAddProtoMessage', value),
     updateSendMessage: ({ commit }, value) => commit('updateSendMessage', value),
+    addOldMessage: ({ commit }, value) => commit('addOldMessage', value),
 }
 const store = new Vuex.Store({
   state,

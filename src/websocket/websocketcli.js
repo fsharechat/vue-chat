@@ -74,6 +74,11 @@ export class WebSocketClient {
        return vuexStore.state.vueSocket.modifyFriendAlias(targetUid,alias)
     }
 
+    //注意beforeUid最好为string类型
+    getRemoteMessages(conversation,beforeUid,count){
+      return vuexStore.state.vueSocket.getRemoteMessages(conversation,beforeUid,count)
+    }
+
 }
 
 const self = new WebSocketClient();

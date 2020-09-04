@@ -1,4 +1,4 @@
-import {PUBLISH, FP, UPUI, MP, MS, KEY_VUE_USER_ID, KEY_VUE_DEVICE_ID, DISCONNECT, GPGI, GQNUT, US, FAR, FRP, FHR, MMI, GPGM, GC, GQ, PUB_ACK, ERROR_CODE, MR, GAM, GMI, GKM, GD, GMURL, FALS} from '../constant'
+import {PUBLISH, FP, UPUI, MP, MS, KEY_VUE_USER_ID, KEY_VUE_DEVICE_ID, DISCONNECT, GPGI, GQNUT, US, FAR, FRP, FHR, MMI, GPGM, GC, GQ, PUB_ACK, ERROR_CODE, MR, GAM, GMI, GKM, GD, GMURL, FALS, LRM} from '../constant'
 import {decrypt,encrypt} from './utils/aes'
 import {CONNECT} from '../constant'
 import {WebSocketProtoMessage} from './message/websocketprotomessage'
@@ -38,6 +38,7 @@ import KickGroupMemberHandler from './handler/kickGroupmemberHandler'
 import DismissGroupHandler from './handler/dismissGroupHandler';
 import GetMinioUploadUrlHandler from './handler/getMinioUploadUrlHandler';
 import SetFriendAliasRequestHandler from './handler/setFriendAliasRequestHandler';
+import LoadRemoteMessageHandler from './handler/loadRemoteMessageHander';
 export default class VueWebSocket {
     handlerList = [];
     userDisconnect = false;
@@ -177,6 +178,7 @@ export default class VueWebSocket {
         this.handlerList.push(new DismissGroupHandler(this));
         this.handlerList.push(new GetMinioUploadUrlHandler(this))
         this.handlerList.push(new SetFriendAliasRequestHandler(this))
+        this.handlerList.push(new LoadRemoteMessageHandler(this))
     }
 
     processMessage(data){
@@ -356,6 +358,14 @@ export default class VueWebSocket {
        return await this.sendPublishMessage(MR,{
             messageUid: messageUid
        })
+    }
+
+    async getRemoteMessages(conversation,beforeUid,count){
+        return await this.sendPublishMessage(LRM,{
+            beforeUid: beforeUid,
+            count: count,
+            conversation: conversation
+        })
     }
 
     pullMessage(messageId,type = 0,pullType = 0,sendMessageCount = 0){

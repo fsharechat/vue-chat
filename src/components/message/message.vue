@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters,mapActions, mapState } from 'vuex'
 import TimeUtils from '../../websocket/utils/timeUtils'
 import Xgplayer from 'xgplayer-vue';
 import 'viewerjs/dist/viewer.css'
@@ -95,6 +95,9 @@ import RecallMessageNotification from '../../websocket/message/notification/reca
 import webSocketClient from '../../websocket/websocketcli';
 import { SUCCESS_CODE } from '../../constant';
 import LocalStore from '../../websocket/store/localstore';
+import Conversation from '../../websocket/model/conversation';
+import ConversationType from '../../websocket/model/conversationType';
+import ProtoMessage from '../../websocket/message/protomessage'
 export default {
     components:{
         Xgplayer,
@@ -108,6 +111,7 @@ export default {
             options: {
                 url: 'data-src'
             },
+            messageDatalistHeight:0
         }
     },
     
@@ -124,7 +128,8 @@ export default {
             'userInfoList',
             'showGroupInfo',
             'showMessageRightMenu',
-            'groupMemberMap'
+            'groupMemberMap',
+            'isLoadRemoteMessage'
         ]),
         showGroupInfo: {
            get() {
@@ -153,10 +158,22 @@ export default {
     watch: {
         // 发送信息后,让信息滚动到最下面
         messages() {
-          setTimeout(() => this.$refs.list.scrollTop = this.$refs.list.scrollHeight, 0)
+          setTimeout(() => {
+              if(!this.isLoadRemoteMessage){
+                this.$refs.list.scrollTop = this.$refs.list.scrollHeight
+              } else {
+                  var currentListheight = this.$refs.list.scrollHeight;
+                  console.log("currentListheight "+currentListheight+" messageDatalistHeight "+this.messageDatalistHeight)
+                  this.$refs.list.scrollTop = currentListheight - this.messageDatalistHeight
+                  this.messageDatalistHeight = currentListheight
+              }
+          }, 0)
         }
     },
     methods: {
+        ...mapActions([
+             'addOldMessage',
+        ]),
         changeShowGroupInfo(){
             if(this.showGroupInfo){
                 this.showGroupInfo = false
@@ -259,9 +276,36 @@ export default {
         // 参考资料 https://blog.csdn.net/qq449736038/article/details/80769507
         scrollEvent(e){
             let listheight= this.$refs.list.offsetHeight;
-            // console.log('scroll event top->'+e.srcElement.scrollTop+ ' scrollheight '+e.srcElement.scrollHeight+" list height->"+listheight);
+            //console.log('scroll event top->'+e.srcElement.scrollTop+ ' scrollheight '+e.srcElement.scrollHeight+" list height->"+listheight);
              if(e.srcElement.scrollHeight - e.srcElement.scrollTop > listheight){
                  this.$store.dispatch('clearUnreadStatus', '')
+             }
+             if(e.srcElement.scrollTop == 0){
+                 this.messageDatalistHeight = e.srcElement.scrollHeight;
+                 console.log("scroll height "+listheight)
+                 var conversationType = this.isSingleConversation ? ConversationType.Single : ConversationType.Group
+                 var conversation = new Conversation(conversationType,this.selectedChat.target,0)
+                 var beforeUid = 0;
+                 if(this.selectedChat.protoMessages && this.selectedChat.protoMessages.length > 0){
+                     beforeUid = this.selectedChat.protoMessages[0].messageId
+                     console.log("beforeUid "+beforeUid)
+                 }
+                 webSocketClient.getRemoteMessages(conversation,beforeUid,20).then(data => {
+                     //console.log('code '+data.code+' result '+data.result)
+                     if(data.result){
+                        var remoteMessage = JSON.parse(data.result)
+                        var count = remoteMessage.count
+                        console.log("message count "+count)
+                        if(count > 0){
+                           var messageList = remoteMessage.messageResponseList;
+
+                           for(var i = messageList.length - 1; i >= 0; i-- ){
+                               var protoMessage = ProtoMessage.toProtoMessage(messageList[i]);
+                               this.addOldMessage(protoMessage)
+                           }
+                        }
+                     }
+                 })
              }
         },
 

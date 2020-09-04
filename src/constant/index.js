@@ -38,6 +38,7 @@ export const FRN = "FRN";
 export const FHR = "FHR";
 export const FN = "FN";
 export const MMI = "MMI";
+export const LRM = "LRM";
 
 export const HTTP_HOST = "https://"+WS_IP + "/"
 export const LOGIN_API = HTTP_HOST + "login";
@@ -58,3 +59,6 @@ export const UPLOAD_BY_QINIU = false;
 
 export const ERROR_CODE = 400;
 export const SUCCESS_CODE = 200;
+
+//conversation
+export const CONVERSATION_MAX_MESSAGE_SIZE = 50;
