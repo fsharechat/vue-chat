@@ -143,7 +143,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 ## 开源协议
 
-本项目使用非商业性署名协议[Creative Commons Attribution Non Commercial 3.0 Unported](LICENSE)
+本项目使用非商业性署名协议,禁止演绎[Creative Commons Attribution Non Commercial 3.0 Unported](LICENSE)
 
 ## 一次性赞助
 
