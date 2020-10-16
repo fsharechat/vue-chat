@@ -298,6 +298,38 @@ const mutations = {
         }
     },
 
+    updateConversationBrief(state){
+        //更新会话信息
+        for(var stateConversationInfo of state.conversations){
+            var friend = state.friendlist.find(friend => friend.wxid === stateConversationInfo.conversationInfo.target);
+            if(friend){
+                stateConversationInfo.name = friend.remark ? friend.remark: friend.nickname;
+                stateConversationInfo.img = friend.img;
+            } else {
+                var user = state.userInfoList.find(user => user.uid == stateConversationInfo.conversationInfo.target)
+                if(user){
+                    stateConversationInfo.name = user.displayName;
+                    stateConversationInfo.img = user.portrait;
+                }
+            }
+        }
+    },
+
+    updateMessageBrief(state){
+        //更新消息列表信息
+        for(var stateChatMessage of state.messages){
+            var friend = state.friendlist.find(friend => friend.wxid === stateChatMessage.target);
+            if(friend){
+                stateChatMessage.name = friend.remark ? friend.remark: friend.nickname;
+            }else {
+                var user = state.userInfoList.find(user => user.uid == stateChatMessage.target)
+                if(user){
+                    stateChatMessage.name = user.displayName;
+                }
+            }
+        }
+    },
+
     updateUserInfos(state,userInfos){
         for(let currentUserInfo of userInfos){
            if(currentUserInfo.uid === state.userId){
@@ -320,6 +352,8 @@ const mutations = {
               state.userInfoList.push(currentUserInfo);
            }
         }
+        this.commit("updateConversationBrief")
+        this.commit("updateMessageBrief")
     },
 
     updateGroupInfos(state,groupInfos){
