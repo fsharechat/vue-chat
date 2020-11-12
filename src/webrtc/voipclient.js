@@ -295,9 +295,9 @@ export default class VoipClient extends OnReceiverMessageListener{
         this.myPeerConnection = new RTCPeerConnection({
           iceServers: [     // Information about ICE servers - Use your own!
             {
-              urls: "turn:turn.liyufan.win:3478",  // A TURN server
-              username: "wfchat",
-              credential: "wfchat"
+              urls: "turn:turn.fsharechat.cn:3478",  // A TURN server
+              username: "comsince",
+              credential: "comsince"
             }
           ]
         });
