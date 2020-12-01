@@ -1,6 +1,10 @@
 export const WS_PROTOCOL = 'wss';
+// export const WS_IP = 'chat.comsince.cn';
+//push-connector服务地址
 export const WS_IP = 'chat.comsince.cn';
-// export const WS_IP = '172.16.46.201';
+//push-api服务地址
+export const HTTP_IP = 'chat.comsince.cn';
+//websocket端口,请不要更改
 export const WS_PORT = 9326;
 export const HEART_BEAT_INTERVAL = 25 * 1000;
 export const RECONNECT_INTERVAL = 30 * 1000;
@@ -40,7 +44,7 @@ export const FN = "FN";
 export const MMI = "MMI";
 export const LRM = "LRM";
 
-export const HTTP_HOST = "https://"+WS_IP + "/"
+export const HTTP_HOST = "https://"+HTTP_IP + "/"
 export const LOGIN_API = HTTP_HOST + "login";
 export const SNED_VERIFY_CODE_API = HTTP_HOST + "send_code";;
 
