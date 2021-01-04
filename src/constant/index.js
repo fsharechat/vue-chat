@@ -1,7 +1,7 @@
 export const WS_PROTOCOL = 'wss';
 // export const WS_IP = 'chat.comsince.cn';
 //push-connector服务地址
-export const WS_IP = 'server.comsince.cn';
+export const WS_IP = 'server.comsince.cn/ws';
 //push-api服务地址
 export const HTTP_IP = 'server.comsince.cn';
 //websocket端口,请不要更改
