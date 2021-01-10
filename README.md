@@ -104,6 +104,13 @@
 * 限制每条会话的消息条数,发送消息时才会删除过多的消息,接收消息时有可能会删除历史未读消息,所以接收时暂不删除过多的消息
 
 
+### V1.1.7
+* 增加自动登录跳转的功能，url如下所以.参数基本移动版本一致，跳转地址变更为`http://localhost:9080/conversation`
+
+```
+http://localhost:9080/conversation?uid=test123&target=373z3zNN&cid=b3caff5a8a6b4bb6bd1aa6198080d8bc&token=tD4djZXp7BD1DJno35Lt82s6QUYMGeCVWYGa0vOJ5p7tHy66jcypsJTRFf0mz2C13i2WCeizLtccGAWODE7S0biFUfHB16b%2fHxgCUfap2LPtQrtMlOvFslUmmPA7fjy%2fs8guTrO5SMRgHLnzguIWeHO7p9WLZzTjq0zm7udTkBw%3d
+```
+
 ## Build Setup
 
 ``` bash

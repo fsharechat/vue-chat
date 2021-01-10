@@ -1,6 +1,6 @@
 export const WS_PROTOCOL = 'wss';
 // export const WS_IP = 'chat.comsince.cn';
-//push-connector服务地址
+//push-connector服务地址,ws这里配置nginx转发地址，如果没有则去除
 export const WS_IP = 'server.comsince.cn/ws';
 //push-api服务地址
 export const HTTP_IP = 'server.comsince.cn';

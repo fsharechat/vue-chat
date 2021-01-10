@@ -1,6 +1,6 @@
 import router from './router'
 import store from './store'
-const whiteList = ['/login'] // 不重定向白名单
+const whiteList = ['/login','/conversation'] // 不重定向白名单
 router.beforeEach((to, from, next) => {
   var token = localStorage.getItem('vue-token');
   console.log('match route token '+token+" to "+to.path +" from "+from.path +" next "+next.path);

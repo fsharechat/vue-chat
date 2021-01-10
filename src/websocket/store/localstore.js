@@ -1,4 +1,4 @@
-import { KEY_VUE_USER_ID } from "../../constant";
+import { KEY_VUE_DEVICE_ID, KEY_VUE_TOKEN, KEY_VUE_USER_ID } from "../../constant";
 
 /**
  * 本地缓存，包括如下基本信息
@@ -81,8 +81,32 @@ export default class LocalStore {
         localStorage.setItem("send_message_count",0);
     }
 
+    static setUserId(userId){
+        localStorage.setItem(KEY_VUE_USER_ID,userId)
+    }
+
     static getUserId(){
         return localStorage.getItem(KEY_VUE_USER_ID);
+    }
+
+    static setDeviceId(deviceId){
+        localStorage.setItem(KEY_VUE_DEVICE_ID,deviceId)
+    }
+
+    static getDeviceId(){
+        return localStorage.getItem(KEY_VUE_DEVICE_ID);
+    }
+
+    static setToken(token){
+        localStorage.setItem(KEY_VUE_TOKEN,token)
+    }
+
+    static getToken(){
+        return localStorage.getItem(KEY_VUE_TOKEN)
+    }
+
+    static isLogin(){
+        return this.getToken() && this.getToken() != ''
     }
 
     static setSelectTarget(value){

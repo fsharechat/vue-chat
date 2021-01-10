@@ -16,13 +16,35 @@ import { mapActions, mapState } from 'vuex'
 import VueWebSocket from '../websocket';
 import {WS_PROTOCOL,WS_IP,WS_PORT,HEART_BEAT_INTERVAL,RECONNECT_INTERVAL,BINTRAY_TYPE} from '../constant/index'
 import groupVideoCall from './group/groupVideoCall'
+import LocalStore  from '../websocket/store/localstore'
 export default {
    components: {
      mycard,
      groupVideoCall
    },
    created () {
-       this.$store.dispatch('initData');
+     //获取传递过来的参数
+    let uid = this.$route.query.uid
+    let target = this.$route.query.target
+    let token  = this.$route.query.token
+    let cid = this.$route.query.cid;
+    console.log("query uid "+uid +" token "+token +" cid "+cid+" target "+target)
+    if(target){
+       LocalStore.setSelectTarget(target)
+    }
+    if(cid){
+       LocalStore.setDeviceId(cid)
+    }
+    if(uid){
+       LocalStore.setUserId(uid);
+    }
+    if(token){
+      LocalStore.setToken(token);
+    }
+    if(LocalStore.isLogin()){
+      this.$store.dispatch("initData");
+    }
+       //this.$store.dispatch('initData');
    },
    computed: {
        ...mapState([
