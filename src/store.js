@@ -307,6 +307,7 @@ const mutations = {
                 stateConversationInfo.img = friend.img;
             } else {
                 var user = state.userInfoList.find(user => user.uid == stateConversationInfo.conversationInfo.target)
+                console.log("updateConversationBrief "+stateConversationInfo.conversationInfo.target +" user "+user)
                 if(user){
                     stateConversationInfo.name = user.displayName;
                     stateConversationInfo.img = user.portrait;
@@ -318,11 +319,14 @@ const mutations = {
     updateMessageBrief(state){
         //更新消息列表信息
         for(var stateChatMessage of state.messages){
+
             var friend = state.friendlist.find(friend => friend.wxid === stateChatMessage.target);
             if(friend){
                 stateChatMessage.name = friend.remark ? friend.remark: friend.nickname;
             }else {
                 var user = state.userInfoList.find(user => user.uid == stateChatMessage.target)
+                console.log("updateMessageBrief "+stateChatMessage.target +" user "+user)
+
                 if(user){
                     stateChatMessage.name = user.displayName;
                 }
@@ -869,6 +873,31 @@ const getters = {
     },
     //筛选会话列表
     searchedConversationList(){
+        var stateConversationInfo = state.conversations.find(stateConversation => stateConversation.conversationInfo.target === state.selectTarget);
+        if( !stateConversationInfo && state.selectTarget){
+            var protoConversationInfo = new ProtoConversationInfo();
+            protoConversationInfo.conversationType = ConversationType.Single;
+            protoConversationInfo.target = state.selectTarget;
+            protoConversationInfo.line = 0;
+            protoConversationInfo.top = false;
+            protoConversationInfo.slient = false;
+            protoConversationInfo.timestamp = new Date().getTime();
+            protoConversationInfo.unreadCount = new UnreadCount();
+            var lastProtoMessage = new ProtoMessage();
+            protoConversationInfo.lastMessage = lastProtoMessage;
+
+            var user = state.userInfoList.find(user => user.uid == state.selectTarget)
+            
+            var stateConversationInfo = new StateConversationInfo();
+            if(user){
+                stateConversationInfo.name = user.displayName;
+                stateConversationInfo.img = user.portrait;
+            } else {
+                stateConversationInfo.name = '';
+            }
+            stateConversationInfo.conversationInfo = protoConversationInfo;
+            state.conversations.unshift(stateConversationInfo);
+        }
        return state.conversations.filter(conversationInfo => conversationInfo.name ? conversationInfo.name.includes(state.searchText): false);
     },
     //当前会话是否为单聊会话
@@ -952,7 +981,7 @@ const getters = {
        console.log("select target "+state.selectTarget)
        if(chatMessage == null){
            var conversationName = "";
-           var conversationTarget = '';
+           var conversationTarget = state.selectTarget;
            if(state.friendlist){
              var friend = state.friendlist.find(friend => friend.wxid == state.selectTarget) 
              if(friend){
@@ -965,6 +994,7 @@ const getters = {
               target: conversationTarget,
               protoMessages: []
           }
+          state.messages.push(chatMessage)
        }
        console.log("selectedChat "+chatMessage.name+" target "+chatMessage.target);
        return chatMessage
@@ -1058,6 +1088,15 @@ store.watch(
     state => state.conversations,
     value => {
         LocalStore.saveConverSations(value);
+        for(var stateCoversation of value){
+            console.log("conversation "+stateCoversation.name)
+            if(!stateCoversation.name  || stateCoversation.name == ''){
+                if(stateCoversation.conversationInfo.target != '' && state.waitUserIds.indexOf(stateCoversation.conversationInfo.target) == -1){
+                    console.log("update conversation name "+stateCoversation.conversationInfo.target)
+                    state.vueSocket.getUserInfos([stateCoversation.conversationInfo.target]);
+                }
+            }
+        }
     },
     {
         deep : true
