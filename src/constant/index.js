@@ -1,9 +1,6 @@
 export const WS_PROTOCOL = 'wss';
-// export const WS_IP = 'chat.comsince.cn';
-//push-connector服务地址
-export const WS_IP = 'server.comsince.cn/ws';
-//push-api服务地址
-export const HTTP_IP = 'server.comsince.cn';
+export const WS_IP = 'backend-websocket.fsharechat.cn/ws';
+export const HTTP_IP = 'backend-http.fsharechat.cn';
 //websocket端口,请不要更改
 export const WS_PORT = 9326;
 export const HEART_BEAT_INTERVAL = 25 * 1000;
